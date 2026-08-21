@@ -14,7 +14,6 @@ export default function MisProductosPage() {
   const [descripcion, setDescripcion] = useState('')
   const [categoria, setCategoria] = useState('Verduras')
   const [precioUnitario, setPrecioUnitario] = useState('')
-  const [unidad] = useState('unidades')
   const [stockDisponible, setStockDisponible] = useState('')
   const [selectedFincaId, setSelectedFincaId] = useState('')
   const [createLoading, setCreateLoading] = useState(false)
@@ -27,7 +26,6 @@ export default function MisProductosPage() {
   const [editDescripcion, setEditDescripcion] = useState('')
   const [editCategoria, setEditCategoria] = useState('Verduras')
   const [editPrecioUnitario, setEditPrecioUnitario] = useState('')
-  const [editUnidad] = useState('unidades')
   const [editStockDisponible, setEditStockDisponible] = useState('')
   const [editFincaId, setEditFincaId] = useState('')
   const [editDisponible, setEditDisponible] = useState(true)
@@ -68,7 +66,6 @@ export default function MisProductosPage() {
     setDescripcion('')
     setCategoria('Verduras')
     setPrecioUnitario('')
-    setUnidad('kg')
     setStockDisponible('')
     setSelectedFincaId(fincas.length > 0 ? fincas[0].id : '')
     setCreateError('')
@@ -92,7 +89,7 @@ export default function MisProductosPage() {
         descripcion: descripcion.trim() || undefined,
         categoria: categoria || undefined,
         precioUnitario: parseFloat(precioUnitario),
-        unidad: unidad.trim() || 'kg',
+        unidad: 'unidades',
         stockDisponible: parseFloat(stockDisponible) || 0.0,
         fincaId: selectedFincaId ? Number(selectedFincaId) : undefined,
         disponible: true,
@@ -118,7 +115,6 @@ export default function MisProductosPage() {
     setEditDescripcion(prod.descripcion || '')
     setEditCategoria(prod.categoria || 'Verduras')
     setEditPrecioUnitario(prod.precioUnitario)
-    setEditUnidad(prod.unidad || 'kg')
     setEditStockDisponible(prod.stockDisponible)
     setEditFincaId(prod.fincaId ? String(prod.fincaId) : '')
     setEditDisponible(Boolean(prod.disponible))
@@ -144,7 +140,7 @@ export default function MisProductosPage() {
         descripcion: editDescripcion.trim() || undefined,
         categoria: editCategoria || undefined,
         precioUnitario: parseFloat(editPrecioUnitario),
-        unidad: editUnidad.trim() || 'kg',
+        unidad: 'unidades',
         stockDisponible: parseFloat(editStockDisponible) || 0.0,
         fincaId: editFincaId ? Number(editFincaId) : undefined,
         disponible: editDisponible,
