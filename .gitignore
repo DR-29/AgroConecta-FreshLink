@@ -1,0 +1,42 @@
+# Gradle
+.gradle/
+build/
+bin/
+out/
+*.jar
+*.war
+
+# Maven
+target/
+
+# Node / Frontend
+node_modules/
+dist/
+frontend/node_modules/
+frontend/dist/
+.pnpm-store/
+
+# IDE & Editors
+.localappdata/
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+
+# Environment & Local Secrets
+.env
+.env.local
+.env.*.local
+frontend/.env
+frontend/.env.local
+
+# Logs
+*.log
+
+# OS Metadata
+.DS_Store
+Thumbs.db
