@@ -1,10 +1,18 @@
+/**
+    - endpoints.js - Capa de Abstracción de APIs del Backend
+ - Centraliza todas las rutas REST organizadas por Módulo y Rol de Usuario.
+ - Cada función retorna una Promesa que se consume con async/await en las páginas.
+ */
+
 import { api } from './client'
 
+// MÓDULO DE USUARIO (Común para todos los roles)
 export const userApi = {
   getMe: () => api.get('/users/me'),
   updateMe: (payload) => api.put('/users/me', payload),
 }
 
+// MÓDULO PRODUCTOR AGRÍCOLA
 export const productorApi = {
   getFincas: () => api.get('/productor/fincas'),
   createFinca: (payload) => api.post('/productor/fincas', payload),
@@ -16,10 +24,12 @@ export const productorApi = {
   updateStock: (id, payload) => api.patch(`/productor/productos/${id}/stock`, payload),
   getPedidos: () => api.get('/productor/pedidos'),
   acceptPedido: (id) => api.post(`/productor/pedidos/${id}/aceptar`),
-  selectTransportista: (pedidoId, transportistaId) => api.post(`/productor/pedidos/${pedidoId}/seleccionar-transportista`, { transportistaId }),
+  selectTransportista: (pedidoId, transportistaId) =>
+    api.post(`/productor/pedidos/${pedidoId}/seleccionar-transportista`, { transportistaId }),
   getTransportistas: () => api.get('/productor/transportistas'),
 }
 
+// MÓDULO TIENDA COMPRADORA
 export const tiendaApi = {
   searchProductos: (params = '') => api.get(`/tienda/productos${params}`),
   createPedido: (payload) => api.post('/tienda/pedidos', payload),
@@ -30,6 +40,7 @@ export const tiendaApi = {
   getReclamaciones: () => api.get('/tienda/reclamaciones'),
 }
 
+// MÓDULO TRANSPORTISTA / LOGÍSTICA
 export const transportistaApi = {
   getVehiculos: () => api.get('/transportista/vehiculos'),
   createVehiculo: (payload) => api.post('/transportista/vehiculos', payload),
@@ -42,10 +53,12 @@ export const transportistaApi = {
   updateDeliveryStatus: (id, payload) => api.patch(`/transportista/pedidos/${id}/estado`, payload),
 }
 
+// MÓDULO ADMINISTRADOR DEL SISTEMA
 export const adminApi = {
   getUsuarios: () => api.get('/admin/usuarios'),
   toggleUsuario: (id) => api.post(`/admin/usuarios/${id}/toggle`),
-  approveTransportista: (id, approved) => api.patch(`/admin/transportistas/${id}/aprobacion?aprobado=${approved}`),
+  approveTransportista: (id, approved) =>
+    api.patch(`/admin/transportistas/${id}/aprobacion?aprobado=${approved}`),
   getProductos: () => api.get('/admin/productos'),
   deactivateProducto: (id) => api.delete(`/admin/productos/${id}`),
   getReclamaciones: () => api.get('/admin/reclamaciones'),
