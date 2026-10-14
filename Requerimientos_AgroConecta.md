@@ -168,12 +168,12 @@ productores, tiendas y transportistas.
 
 ## Iconografía sugerida
 
--   🌱 Productores
--   🏪 Tiendas
--   🚚 Transportistas
--   📦 Pedidos
--   📍 Geolocalización
--   📊 Reportes
+-   Productores (campo, siembra)
+-   Tiendas (comercio, retail)
+-   Transportistas (logística de carga)
+-   Pedidos (paquetes y despachos)
+-   Geolocalización (mapas y rutas)
+-   Reportes (métricas y analítica)
 
 ## Estilo visual
 

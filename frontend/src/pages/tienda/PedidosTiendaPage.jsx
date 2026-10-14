@@ -325,11 +325,11 @@ export default function PedidosTiendaPage() {
                   className="input-field"
                   style={{ height: '44px' }}
                 >
-                  <option value={5}>⭐⭐⭐⭐⭐ (5 - Excelente)</option>
-                  <option value={4}>⭐⭐⭐⭐ (4 - Muy bueno)</option>
-                  <option value={3}>⭐⭐⭐ (3 - Regular)</option>
-                  <option value={2}>⭐⭐ (2 - Deficiente)</option>
-                  <option value={1}>⭐ (1 - Muy malo)</option>
+                  <option value={5}>5 - Excelente</option>
+                  <option value={4}>4 - Muy bueno</option>
+                  <option value={3}>3 - Regular</option>
+                  <option value={2}>2 - Deficiente</option>
+                  <option value={1}>1 - Muy malo</option>
                 </select>
               </div>
 

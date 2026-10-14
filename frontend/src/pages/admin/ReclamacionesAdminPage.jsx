@@ -152,7 +152,7 @@ export default function ReclamacionesAdminPage() {
                             Resolver Reclamación
                           </button>
                         ) : (
-                          <span className="muted-text" style={{ fontSize: '0.85rem' }}>✓ Caso cerrado</span>
+                          <span className="muted-text" style={{ fontSize: '0.85rem' }}>Caso cerrado</span>
                         )}
                       </td>
                     </tr>

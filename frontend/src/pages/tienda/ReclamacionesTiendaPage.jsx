@@ -221,7 +221,7 @@ export default function ReclamacionesTiendaPage() {
                     </div>
                   ) : (
                     <div style={{ fontSize: '0.82rem', color: '#b71c1c', fontStyle: 'italic', marginTop: '4px' }}>
-                      ⏳ En espera de revisión y respuesta administrativa...
+                      En espera de revisión y respuesta administrativa...
                     </div>
                   )}
                 </div>

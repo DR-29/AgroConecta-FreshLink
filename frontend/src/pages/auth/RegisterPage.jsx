@@ -122,9 +122,9 @@ export default function RegisterPage() {
               className="input-field"
               required
             >
-              <option value="PRODUCTOR">🌱 Productor Agrícola</option>
-              <option value="TIENDA">🏪 Tienda Compradora</option>
-              <option value="TRANSPORTISTA">🚚 Transportista Logístico</option>
+              <option value="PRODUCTOR">Productor Agrícola</option>
+              <option value="TIENDA">Tienda Compradora</option>
+              <option value="TRANSPORTISTA">Transportista Logístico</option>
             </select>
           </label>
 

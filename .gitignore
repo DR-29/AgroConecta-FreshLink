@@ -29,10 +29,26 @@ frontend/dist/
 
 # Environment & Local Secrets
 .env
+.env.*
+!.env.example
 .env.local
 .env.*.local
 frontend/.env
 frontend/.env.local
+api-fastapi/.env
+api-express/.env
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*.db
+*.sqlite
+*.sqlite3
 
 # Logs
 *.log

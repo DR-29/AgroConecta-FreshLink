@@ -122,7 +122,7 @@ export default function ReportesAdminPage() {
                   <span>Satisfacción</span>
                 </h3>
                 <span className="card-tag" style={{ backgroundColor: '#fff3e0', color: '#e65100' }}>
-                  Ver Reseñas 💬
+                  Ver Reseñas
                 </span>
               </div>
               <div style={{ fontSize: '2.6rem', fontWeight: '800', color: 'var(--color-secondary-dark)', fontFamily: 'Outfit, sans-serif' }}>
@@ -283,7 +283,7 @@ export default function ReportesAdminPage() {
                             border: `1px solid ${isProductor ? '#a5d6a7' : '#90caf9'}`,
                           }}
                         >
-                          {isProductor ? '🌱 Reseña a Productor' : '🚚 Reseña a Transportista'}
+                          {isProductor ? 'Reseña a Productor' : 'Reseña a Transportista'}
                         </span>
                       </div>
 

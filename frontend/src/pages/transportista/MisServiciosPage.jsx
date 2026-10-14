@@ -215,7 +215,7 @@ export default function MisServiciosPage() {
                 className="btn btn-secondary btn-block"
                 style={{ marginBottom: '14px', height: '42px' }}
               >
-                Obtener GPS del Navegador 📡
+                Obtener GPS del Navegador
               </button>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
