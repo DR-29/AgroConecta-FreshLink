@@ -8,10 +8,14 @@ from app.schemas.schemas import (
     ModuloResponse, ModuloCreate,
     ModuloXRolResponse, ModuloXRolCreate, ModuloXRolUpdate
 )
+from app.repositories.seguridad_repo import SeguridadRepository
 from app.api.deps import require_module_permission
 
 router = APIRouter()
 MODULO = "MOD_SEGURIDAD"
+
+# Instancia del repositorio siguiendo el estándar de la guía
+repo = SeguridadRepository()
 
 # Módulos
 @router.get("/modulos", response_model=List[ModuloResponse], summary="Listar módulos del sistema")
@@ -19,8 +23,10 @@ def get_modulos(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(require_module_permission(MODULO, "leer"))
 ) -> Any:
-    """Lista todos los módulos activos del sistema."""
-    return db.query(Modulo).filter(Modulo.estado == 1).all()
+    """Lista todos los módulos activos del sistema mediante el repositorio."""
+    r = SeguridadRepository(db)
+    return r.obtener_modulos()
+
 
 @router.post("/modulos", response_model=ModuloResponse, status_code=status.HTTP_201_CREATED, summary="Crear nuevo módulo")
 def create_modulo(

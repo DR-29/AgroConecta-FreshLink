@@ -9,6 +9,7 @@ from app.schemas.schemas import (
     VehiculoCreate, VehiculoUpdate, VehiculoResponse,
     SolicitudTransporteCreate, SolicitudTransporteUpdate, SolicitudTransporteResponse
 )
+from app.repositories.logistica_repo import LogisticaRepository
 from app.api.deps import require_module_permission, require_roles
 from app.api.acceso import (
     ESTADOS_SOLICITUD, nombre_rol, es_admin, productores_del_pedido
@@ -16,6 +17,9 @@ from app.api.acceso import (
 
 router = APIRouter()
 MODULO = "MOD_LOGISTICA"
+
+# Instancia del repositorio siguiendo el estándar de la guía
+repo = LogisticaRepository()
 
 
 def _validar_transportista_y_vehiculo(db: Session, id_transportista: Optional[int], id_vehiculo: Optional[int]) -> None:
@@ -44,12 +48,9 @@ def get_vehiculos(
     solo_aprobados: bool = Query(False, description="Filtrar solo vehículos aprobados por el admin")
 ) -> Any:
     """El TRANSPORTISTA ve sus vehículos; ADMIN y PRODUCTOR ven todos (para elegir transporte)."""
-    query = db.query(Vehiculo).filter(Vehiculo.estado == 1)
-    if nombre_rol(db, current_user) == "TRANSPORTISTA":
-        query = query.filter(Vehiculo.id_transportista == current_user.id_usuario)
-    if solo_aprobados:
-        query = query.filter(Vehiculo.aprobado_admin == True)
-    return query.all()
+    r = LogisticaRepository(db)
+    id_trans = current_user.id_usuario if nombre_rol(db, current_user) == "TRANSPORTISTA" else None
+    return r.obtener_vehiculos(id_transportista=id_trans, solo_aprobados=solo_aprobados)
 
 
 @router.post("/vehiculos", response_model=VehiculoResponse, status_code=status.HTTP_201_CREATED, summary="Registrar vehículo")
@@ -58,34 +59,18 @@ def create_vehiculo(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(require_module_permission(MODULO, "crear"))
 ) -> Any:
-    rol = nombre_rol(db, current_user)
-    if rol not in {"TRANSPORTISTA", "ADMINISTRADOR"}:
-        raise HTTPException(status_code=403, detail="Solo los transportistas pueden registrar vehículos")
+    """Registra un nuevo vehículo de carga mediante el repositorio."""
+    if not es_admin(db, current_user) and nombre_rol(db, current_user) != "TRANSPORTISTA":
+        raise HTTPException(status_code=403, detail="Solo los transportistas o administradores pueden registrar vehículos")
 
-    if rol == "ADMINISTRADOR" and vehiculo_in.id_transportista:
-        id_transportista = vehiculo_in.id_transportista
-        dueno = db.query(Usuario).filter(Usuario.id_usuario == id_transportista, Usuario.estado == 1).first()
-        if not dueno or nombre_rol(db, dueno) != "TRANSPORTISTA":
-            raise HTTPException(status_code=400, detail="El dueño indicado no es un transportista activo")
-    else:
-        id_transportista = current_user.id_usuario
+    id_transportista = vehiculo_in.id_transportista if (es_admin(db, current_user) and vehiculo_in.id_transportista) else current_user.id_usuario
 
-    if db.query(Vehiculo).filter(Vehiculo.placa == vehiculo_in.placa.upper()).first():
-        raise HTTPException(status_code=400, detail="Ya existe un vehículo registrado con esta placa")
+    r = LogisticaRepository(db)
+    if r.obtener_vehiculo_por_placa(vehiculo_in.placa):
+        raise HTTPException(status_code=400, detail=f"Ya existe un vehículo con la placa '{vehiculo_in.placa}'")
 
-    nuevo_vehiculo = Vehiculo(
-        id_transportista=id_transportista,
-        placa=vehiculo_in.placa.upper(),
-        modelo=vehiculo_in.modelo,
-        capacidad_toneladas=vehiculo_in.capacidad_toneladas,
-        tipo_carroceria=vehiculo_in.tipo_carroceria.upper(),
-        aprobado_admin=False,
-        estado=1
-    )
-    db.add(nuevo_vehiculo)
-    db.commit()
-    db.refresh(nuevo_vehiculo)
-    return nuevo_vehiculo
+    aprobado = es_admin(db, current_user)
+    return r.crear_vehiculo(vehiculo_in, id_transportista=id_transportista, aprobado=aprobado)
 
 
 @router.put("/vehiculos/{id_vehiculo}", response_model=VehiculoResponse, summary="Actualizar vehículo")

@@ -11,6 +11,7 @@ from app.models.entities import (
 from app.schemas.schemas import (
     PedidoCreate, PedidoResponse, PedidoItemResponse
 )
+from app.repositories.pedido_repo import PedidoRepository
 from app.api.deps import require_module_permission
 from app.api.acceso import (
     ESTADOS_PEDIDO, nombre_rol, es_admin, productores_del_pedido,
@@ -19,6 +20,9 @@ from app.api.acceso import (
 
 router = APIRouter()
 MODULO = "MOD_PEDIDOS"
+
+# Instancia del repositorio siguiendo el estándar de la guía
+repo = PedidoRepository()
 
 # Transiciones permitidas por rol (el ADMINISTRADOR puede cualquiera)
 TRANSICIONES_POR_ROL = {
@@ -48,33 +52,16 @@ def get_pedidos(
     - PRODUCTOR: pedidos que contienen productos de sus fincas.
     - TRANSPORTISTA: pedidos que tiene asignados.
     """
+    r = PedidoRepository(db)
     rol = nombre_rol(db, current_user)
-    query = db.query(Pedido).filter(Pedido.estado == 1)
-
-    if rol == "TIENDA":
-        query = query.filter(Pedido.id_tienda == current_user.id_usuario)
-    elif rol == "PRODUCTOR":
-        query = (
-            query.join(PedidoItem, PedidoItem.id_pedido == Pedido.id_pedido)
-            .join(Producto, Producto.id_producto == PedidoItem.id_producto)
-            .join(Finca, Finca.id_finca == Producto.id_finca)
-            .filter(Finca.id_productor == current_user.id_usuario)
-            .distinct()
-        )
-    elif rol == "TRANSPORTISTA":
-        query = (
-            query.join(SolicitudTransporte, SolicitudTransporte.id_pedido == Pedido.id_pedido)
-            .filter(
-                SolicitudTransporte.id_transportista == current_user.id_usuario,
-                SolicitudTransporte.estado == 1,
-                SolicitudTransporte.estado_solicitud != "RECHAZADO",
-            )
-        )
-
-    if estado_pedido:
-        query = query.filter(Pedido.estado_pedido == estado_pedido.upper())
-
-    return [_respuesta(p) for p in query.offset(skip).limit(limit).all()]
+    pedidos = r.obtener_pedidos(
+        rol=rol,
+        id_usuario=current_user.id_usuario,
+        estado_pedido=estado_pedido,
+        skip=skip,
+        limit=limit
+    )
+    return [_respuesta(p) for p in pedidos]
 
 
 @router.get("/{id_pedido}", response_model=PedidoResponse, summary="Obtener pedido por ID")
@@ -83,12 +70,14 @@ def get_pedido_by_id(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(require_module_permission(MODULO, "leer"))
 ) -> Any:
-    p = db.query(Pedido).filter(Pedido.id_pedido == id_pedido, Pedido.estado == 1).first()
+    r = PedidoRepository(db)
+    p = r.obtener_por_id(id_pedido)
     if not p:
         raise HTTPException(status_code=404, detail="Pedido no encontrado o inactivo")
     if not puede_ver_pedido(db, current_user, p):
         raise HTTPException(status_code=403, detail="No participas en este pedido")
     return _respuesta(p)
+
 
 
 @router.post("/", response_model=PedidoResponse, status_code=status.HTTP_201_CREATED, summary="Crear orden de compra (Tiendas)")

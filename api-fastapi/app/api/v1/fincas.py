@@ -3,13 +3,18 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.models.entities import Finca, Usuario, Rol
-from app.schemas.schemas import FincaCreate, FincaUpdate, FincaResponse
+from app.models.entities import Usuario
+from app.models.finca import FincaCreate, FincaUpdate, FincaResponse
+from app.repositories.finca_repo import FincaRepository
 from app.api.deps import require_module_permission
 from app.api.acceso import es_admin, nombre_rol
 
 router = APIRouter()
 MODULO = "MOD_FINCAS"
+
+# Instancia del repositorio siguiendo el estándar de la guía
+repo = FincaRepository()
+
 
 @router.get("/", response_model=List[FincaResponse], summary="Listar fincas activas")
 def get_fincas(
@@ -20,13 +25,11 @@ def get_fincas(
     Si el usuario es PRODUCTOR, lista sus fincas activas.
     Si es ADMINISTRADOR u otro rol con permiso, lista todas las fincas activas.
     """
+    r = FincaRepository(db)
     if nombre_rol(db, current_user) == "PRODUCTOR":
-        return db.query(Finca).filter(
-            Finca.id_productor == current_user.id_usuario,
-            Finca.estado == 1
-        ).all()
-    
-    return db.query(Finca).filter(Finca.estado == 1).all()
+        return r.obtener_todos(id_productor=current_user.id_usuario)
+    return r.obtener_todos()
+
 
 @router.get("/{id_finca}", response_model=FincaResponse, summary="Obtener finca por ID")
 def get_finca_by_id(
@@ -34,11 +37,13 @@ def get_finca_by_id(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(require_module_permission(MODULO, "leer"))
 ) -> Any:
-    """Devuelve los datos de una finca."""
-    finca = db.query(Finca).filter(Finca.id_finca == id_finca, Finca.estado == 1).first()
+    """Devuelve los datos de una finca a través del repositorio."""
+    r = FincaRepository(db)
+    finca = r.obtener_por_id(id_finca)
     if not finca:
         raise HTTPException(status_code=404, detail="Finca no encontrada o inactiva")
     return finca
+
 
 @router.post("/", response_model=FincaResponse, status_code=status.HTTP_201_CREATED, summary="Registrar una finca")
 def create_finca(
@@ -46,35 +51,19 @@ def create_finca(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(require_module_permission(MODULO, "crear"))
 ) -> Any:
-    """Registra una nueva finca asignada al productor autenticado."""
+    """Registra una nueva finca asignada al productor autenticado mediante el repositorio."""
     if not es_admin(db, current_user) and nombre_rol(db, current_user) != "PRODUCTOR":
         raise HTTPException(status_code=403, detail="Solo los productores o administradores pueden registrar fincas")
 
     id_productor = finca_in.id_productor if (es_admin(db, current_user) and finca_in.id_productor) else current_user.id_usuario
 
-    # Validar unicidad por productor y nombre
-    existente = db.query(Finca).filter(
-        Finca.id_productor == id_productor,
-        Finca.nombre == finca_in.nombre,
-        Finca.estado == 1
-    ).first()
-
+    r = FincaRepository(db)
+    existente = r.obtener_por_productor_y_nombre(id_productor, finca_in.nombre)
     if existente:
         raise HTTPException(status_code=400, detail="Ya tienes una finca registrada con ese nombre")
 
-    nueva_finca = Finca(
-        id_productor=id_productor,
-        nombre=finca_in.nombre,
-        departamento=finca_in.departamento,
-        municipio=finca_in.municipio,
-        vereda=finca_in.vereda,
-        area_hectareas=finca_in.area_hectareas,
-        estado=1
-    )
-    db.add(nueva_finca)
-    db.commit()
-    db.refresh(nueva_finca)
-    return nueva_finca
+    return r.crear(finca_in, id_productor)
+
 
 @router.put("/{id_finca}", response_model=FincaResponse, summary="Actualizar finca")
 def update_finca(
@@ -83,20 +72,19 @@ def update_finca(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(require_module_permission(MODULO, "actualizar"))
 ) -> Any:
-    """Actualiza la información de la finca."""
-    finca = db.query(Finca).filter(Finca.id_finca == id_finca).first()
+    """Actualiza la información de la finca a través del repositorio."""
+    r = FincaRepository(db)
+    finca = r.obtener_por_id(id_finca)
     if not finca:
         raise HTTPException(status_code=404, detail="Finca no encontrada")
 
-    if not es_admin(db, current_user) and finca.id_productor != current_user.id_usuario:
+    id_prod = getattr(finca, "id_productor", None) or (finca.get("id_productor") if isinstance(finca, dict) else None)
+    if not es_admin(db, current_user) and id_prod != current_user.id_usuario:
         raise HTTPException(status_code=403, detail="No tienes autorización para editar esta finca")
 
-    for field, value in finca_in.dict(exclude_unset=True).items():
-        setattr(finca, field, value)
+    actualizada = r.actualizar(id_finca, finca_in.dict(exclude_unset=True))
+    return actualizada
 
-    db.commit()
-    db.refresh(finca)
-    return finca
 
 @router.delete("/{id_finca}", summary="Borrado lógico de finca (estado = 0)")
 def delete_finca_logico(
@@ -104,14 +92,17 @@ def delete_finca_logico(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(require_module_permission(MODULO, "eliminar"))
 ) -> Any:
-    """Borrado lógico de finca."""
-    finca = db.query(Finca).filter(Finca.id_finca == id_finca).first()
+    """Borrado lógico de finca mediante el repositorio (estado = 0)."""
+    r = FincaRepository(db)
+    finca = r.obtener_por_id(id_finca)
     if not finca:
         raise HTTPException(status_code=404, detail="Finca no encontrada")
 
-    if not es_admin(db, current_user) and finca.id_productor != current_user.id_usuario:
+    id_prod = getattr(finca, "id_productor", None) or (finca.get("id_productor") if isinstance(finca, dict) else None)
+    if not es_admin(db, current_user) and id_prod != current_user.id_usuario:
         raise HTTPException(status_code=403, detail="No tienes autorización para eliminar esta finca")
 
-    finca.estado = 0
-    db.commit()
+    exito = r.eliminar(id_finca)
+    if not exito:
+        raise HTTPException(status_code=404, detail="No se pudo desactivar la finca")
     return {"mensaje": f"Finca {id_finca} desactivada lógicamente (estado = 0)"}

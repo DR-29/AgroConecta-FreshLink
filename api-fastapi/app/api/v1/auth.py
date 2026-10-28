@@ -8,21 +8,23 @@ from app.core.config import settings
 from app.core.database import get_db
 from app.core.security import verify_password, get_password_hash, create_access_token
 from app.models.entities import Usuario, Rol
-from app.schemas.schemas import Token, LoginRequest, UsuarioCreate, UsuarioResponse
+from app.models.usuario import Token, LoginRequest, UsuarioCreate, UsuarioResponse
+from app.repositories.usuario_repo import UsuarioRepository
 from app.api.deps import get_current_user
 
 router = APIRouter()
+
+# Instancia del repositorio siguiendo el estándar de la guía
+repo = UsuarioRepository()
 
 @router.post("/login", response_model=Token, summary="Inicio de sesión y generación de JWT")
 def login_for_access_token(
     db: Session = Depends(get_db),
     form_data: OAuth2PasswordRequestForm = Depends()
 ) -> Any:
-    """Autentica al usuario y genera el token JWT."""
-    user = db.query(Usuario).filter(
-        Usuario.correo == form_data.username,
-        Usuario.estado == 1
-    ).first()
+    """Autentica al usuario y genera el token JWT mediante el repositorio."""
+    r = UsuarioRepository(db)
+    user = r.obtener_por_correo(form_data.username)
 
     if not user or not verify_password(form_data.password, user.contrasena_hash):
         raise HTTPException(
@@ -31,8 +33,8 @@ def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    rol = db.query(Rol).filter(Rol.id_rol == user.id_rol).first()
-    rol_nombre = rol.nombre if rol else "DESCONOCIDO"
+    rol_nombre = getattr(user, "rol_nombre", None) or "DESCONOCIDO"
+
 
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     token = create_access_token(
