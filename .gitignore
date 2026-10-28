@@ -38,6 +38,12 @@ frontend/.env.local
 api-fastapi/.env
 api-express/.env
 
+# Local development notes & tracking
+TAREAS_*.md
+TODO_*.md
+NOTAS_*.md
+
+
 # Python
 venv/
 .venv/
