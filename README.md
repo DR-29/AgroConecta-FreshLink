@@ -1,185 +1,96 @@
-# FreshLink API
+# AgroConecta (FreshLink)
 
-Backend de AgroConecta/FreshLink para conectar productores, tiendas y transportistas.
+Plataforma web para conectar productores campesinos, comercios/tiendas y transportistas de carga, eliminando intermediarios y garantizando trazabilidad y transparencia.
 
-## Tecnologias
+---
 
-- Kotlin + Spring Boot 3.2
-- Spring Data JPA con H2 para desarrollo y PostgreSQL para despliegue
-- Spring Security + JWT
-- Jakarta Bean Validation
-- Gradle Kotlin DSL
+## 🛠️ Tecnologías del Proyecto
 
-## Ejecucion
+* **API Principal (60% / 30%):** FastAPI (Python 3.12) + PostgreSQL (Neon).
+  * Arquitectura modular en capas: Routers (`app/api/v1/`), Modelos Pydantic (`app/models/`) y Repositorios con SQL puro (`app/repositories/`).
+  * Autenticación con JWT cifrado con `bcrypt`.
+  * Matriz RBAC dinámica (`rol`, `modulo`, `moduloxrol`).
+  * Campos de auditoría transversal (`estado`, `creado`, `actualizado`) con borrado lógico.
+* **API Auxiliar (30% / 20%):** Express.js (Node.js) + MySQL (Aiven).
+  * Microservicio desacoplado para gestión de métodos de pago, transacciones y facturación/comprobantes.
+* **Frontend Web (50%):** SvelteKit + Vite + Bootstrap 5.
+  * Consumo centralizado de endpoints mediante servicios en `src/lib/services/`.
+  * Componentes modulares reutilizables en `src/lib/components/`.
+  * Menús dinámicos cargados según permisos de base de datos (`moduloxrol`).
+  * Cero visualización o captura de IDs para el usuario final.
 
-Requiere JDK 17. Desde IntelliJ o Antigravity, ejecutar `FreshLinkApplication`.
+---
 
-Desde terminal:
+## 🚀 Ejecución en Local
 
+### 1. API Principal (FastAPI)
 ```bash
-./gradlew bootRun
+cd api-fastapi
+# Activar entorno virtual
+.\venv\Scripts\activate
+# Ejecutar servidor de desarrollo
+uvicorn main:app --reload --port 8000
 ```
+* **Documentación interactiva Swagger:** [http://localhost:8000/docs](http://localhost:8000/docs)
+* **Especificación OpenAPI:** [http://localhost:8000/openapi.json](http://localhost:8000/openapi.json)
 
-En Windows:
-
-```powershell
-.\gradlew.bat bootRun
+### 2. API Auxiliar (Express + MySQL)
+```bash
+cd api-express
+npm install
+npm run dev
 ```
+* Servidor escuchando en: [http://localhost:3000](http://localhost:3000)
 
-La API utiliza el puerto `8080` por defecto.
-
-## Base de datos
-
-Sin `.env` se utiliza H2 en memoria: `jdbc:h2:mem:freshlink`, usuario `sa` y contrasena vacia. La consola H2 esta disponible en `http://localhost:8080/h2-console` durante desarrollo.
-
-Para PostgreSQL, crear `.env` en la raiz:
-
-```env
-DATABASE_URL=jdbc:postgresql://host:5432/basedatos?sslmode=require
-DATABASE_DRIVER=org.postgresql.Driver
-DATABASE_USERNAME=usuario
-DATABASE_PASSWORD=contrasena
-DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
-JPA_DDL_AUTO=update
+### 3. Frontend (SvelteKit)
+```bash
+cd frontend-svelte
+npm install
+npm run dev
 ```
+* Aplicativo web en: [http://localhost:5173](http://localhost:5173) (con proxy configurado en `vite.config.js` hacia FastAPI).
 
-No subir `.env` ni credenciales al repositorio.
+---
 
-## Usuarios de prueba
+## 👥 Usuarios de Prueba y Roles
 
-Se crean automaticamente cuando la base de datos esta vacia:
+Credenciales precargadas en la base de datos (Contraseña para todos: `Password123*`):
 
-| Rol | Email | Contrasena |
-|---|---|---|
-| ADMIN | admin@freshlink.com | admin123 |
-| PRODUCTOR | carlos@test.com | 123456 |
-| TIENDA | maria@test.com | 123456 |
-| TRANSPORTISTA aprobado/disponible | pedro@test.com | 123456 |
-| TRANSPORTISTA aprobado/disponible | luis@test.com | 123456 |
+| Rol | Documento | Correo | Propósito / Funciones |
+|---|---|---|---|
+| **ADMINISTRADOR** | `1000000001` | `admin@agroconecta.com` | Auditoría total, gestión de usuarios, aprobación de vehículos y roles. |
+| **PRODUCTOR** | `1000000002` | `carlos.productor@agroconecta.com` | Registrar fincas, publicar cosechas, control de inventario y aceptar pedidos. |
+| **TIENDA** | `1000000003` | `maria.tienda@agroconecta.com` | Explorar catálogo de cosechas, emitir órdenes de compra y calificar el servicio. |
+| **TRANSPORTISTA** | `1000000004` | `jorge.transporte@agroconecta.com` | Registrar vehículos de carga, aceptar solicitudes de flete y confirmar entregas. |
 
-El registro publico no permite crear usuarios con rol `ADMIN`. Los nuevos transportistas requieren aprobacion administrativa antes de recibir solicitudes.
+---
 
-## Autenticacion y roles
+## 📦 Arquitectura de Endpoints (FastAPI)
 
-Ejecutar `POST /api/auth/login`, guardar el campo `token` y enviarlo asi:
+Todos los endpoints se encuentran bajo el prefijo `/api/v1`:
 
-```http
-Authorization: Bearer <token>
-```
+* **Autenticación y Perfil:** `/api/v1/auth/login`, `/api/v1/auth/register`, `/api/v1/auth/me`
+* **Usuarios y Roles:** `/api/v1/usuarios/`
+* **Seguridad y Permisos RBAC:** `/api/v1/seguridad/modulos`, `/api/v1/seguridad/permisos`
+* **Fincas y Parcelas:** `/api/v1/fincas/` (CRUD completo y borrado lógico con `estado = 0`)
+* **Catálogo y Cosechas:** `/api/v1/catalogo/categorias`, `/api/v1/catalogo/productos`, `/api/v1/catalogo/productos/{id}/stock`
+* **Pedidos y Trazabilidad:** `/api/v1/pedidos/`, `/api/v1/pedidos/{id}/estado` (`PENDIENTE` ➔ `ACEPTADO` ➔ `EN_RUTA` ➔ `ENTREGADO`)
+* **Logística y Vehículos:** `/api/v1/logistica/vehiculos`, `/api/v1/logistica/solicitudes`
+* **Calificaciones de Servicio:** `/api/v1/calificaciones/`
 
-- `/api/admin/**` -> ADMIN
-- `/api/productor/**` -> PRODUCTOR
-- `/api/tienda/**` -> TIENDA
-- `/api/transportista/**` -> TRANSPORTISTA
+---
 
-## Endpoints actuales
+## 💳 Microservicio de Pagos (Express + MySQL)
 
-### Auth: `/api/auth`
+* `/api/metodos-pago`: Métodos de pago habilitados.
+* `/api/transacciones`: Procesamiento y auditoría de transacciones vinculadas a pedidos.
+* `/api/facturas`: Emisión y consulta de comprobantes fiscales.
 
-| Metodo | Ruta | Descripcion |
-|---|---|---|
-| POST | `/register` | Registrar productor, tienda o transportista |
-| POST | `/login` | Iniciar sesion |
-| POST | `/forgot-password` | Solicitar recuperacion sin revelar si el email existe |
-| POST | `/reset-password` | Restablecer contrasena con token |
+---
 
-### Perfil: `/api/users`
+## 🛡️ Auditoría y Borrado Lógico
 
-| Metodo | Ruta | Descripcion |
-|---|---|---|
-| GET | `/me` | Consultar perfil propio |
-| PUT | `/me` | Actualizar perfil y contrasena |
-
-### Productor: `/api/productor`
-
-| Metodo | Ruta | Descripcion |
-|---|---|---|
-| POST | `/fincas` | Crear finca |
-| GET | `/fincas` | Listar fincas propias |
-| POST | `/productos` | Publicar producto |
-| GET | `/productos` | Listar productos propios |
-| PUT | `/productos/{id}` | Actualizar producto propio |
-| PATCH | `/productos/{id}/stock` | Actualizar stock con `{ "stock": 10 }` |
-| GET | `/pedidos` | Listar pedidos recibidos |
-| POST | `/pedidos/{id}/aceptar` | Aceptar pedido |
-| POST | `/pedidos/{id}/seleccionar-transportista` | Crear solicitud pendiente |
-| GET | `/transportistas` | Listar transportistas aprobados y disponibles |
-
-### Tienda: `/api/tienda`
-
-| Metodo | Ruta | Descripcion |
-|---|---|---|
-| GET | `/productos` | Buscar productos por termino o categoria |
-| POST | `/pedidos` | Crear pedido |
-| GET | `/pedidos` | Listar pedidos propios |
-| GET | `/pedidos/{id}/seguimiento` | Consultar estado, historial y ultima ubicacion |
-| POST | `/pedidos/{id}/calificar` | Calificar despues de entregar |
-| POST | `/reclamaciones` | Crear reclamacion propia |
-
-### Transportista: `/api/transportista`
-
-| Metodo | Ruta | Descripcion |
-|---|---|---|
-| POST | `/vehiculos` | Registrar vehiculo si esta aprobado |
-| GET | `/vehiculos` | Listar vehiculos propios |
-| GET | `/solicitudes` | Listar solicitudes pendientes dirigidas al transportista |
-| POST | `/solicitudes/{id}/aceptar` | Aceptar solicitud pendiente |
-| POST | `/solicitudes/{id}/rechazar` | Rechazar solicitud pendiente |
-| GET | `/servicios` | Listar servicios aceptados propios |
-| PATCH | `/disponibilidad?disponible=true` | Cambiar disponibilidad |
-| POST | `/ubicacion` | Compartir ubicacion |
-| PATCH | `/pedidos/{id}/estado` | Marcar entrega como `ENTREGADO` |
-
-### Administracion: `/api/admin`
-
-| Metodo | Ruta | Descripcion |
-|---|---|---|
-| GET | `/usuarios` | Listar usuarios |
-| POST | `/usuarios/{id}/toggle` | Habilitar o deshabilitar cuenta |
-| PATCH | `/transportistas/{id}/aprobacion?aprobado=true` | Aprobar o rechazar transportista |
-| GET | `/productos` | Listar productos |
-| DELETE | `/productos/{id}` | Desactivar producto mediante eliminacion logica |
-| GET | `/reclamaciones` | Listar reclamaciones |
-| POST | `/reclamaciones/{id}/resolver` | Resolver reclamacion y registrar fecha |
-| GET | `/reportes/usuarios` | Reporte de usuarios por rol |
-| GET | `/reportes/pedidos` | Reporte de pedidos por estado |
-| GET | `/reportes/calificaciones` | Total y promedio de calificaciones |
-
-## Estados principales
-
-- Pedido: `PENDIENTE`, `ACEPTADO`, `EN_TRANSPORTE`, `ENTREGADO`, `CANCELADO`.
-- Solicitud: `PENDIENTE`, `ACEPTADA`, `RECHAZADA`, `COMPLETADA`.
-
-La transicion de entrega implementada es `EN_TRANSPORTE -> ENTREGADO`. Un transportista solo aparece para seleccion cuando esta habilitado, aprobado y disponible.
-
-## Validaciones y errores
-
-Los DTOs usan Jakarta Validation. Las respuestas principales son `400` datos invalidos, `401` credenciales o autenticacion, `403` rol o recurso no permitido, `404` entidad inexistente y `409` conflictos o duplicados.
-
-## CORS
-
-Durante desarrollo se permiten solicitudes CORS desde cualquier origen. En produccion se debe restringir el origen al dominio real del frontend y utilizar HTTPS.
-
-## Estructura
-
-```text
-src/main/kotlin/com/freshlink/
-├── config/       # Seguridad, JWT, CORS y datos iniciales
-├── controller/   # API REST
-├── dto/          # Requests y responses
-├── exception/    # Errores globales
-├── model/        # Entidades y estados
-├── repository/   # Repositorios JPA
-└── service/      # Reglas de negocio
-```
-
-El frontend puede crearse en una carpeta separada, por ejemplo `frontend/`.
-
-## Pendientes conocidos
-
-- Configurar envio real de recuperacion de contrasena mediante SMTP.
-- Agregar pruebas automatizadas.
-- Verificar y estabilizar `bootJar` con el wrapper incluido.
-- Implementar pagos y mensajeria si son exigidos por el alcance.
-- Implementar WebSocket o SSE si se exige tiempo real.
-- Configurar HTTPS, backups y secretos fuera del repositorio para produccion.
+Todas las tablas de ambas bases de datos implementan de forma estricta:
+1. `estado`: `1` (Activo) y `0` (Inactivo / Eliminado lógico). Ningún registro se destruye físicamente de la base de datos.
+2. `creado`: Timestamp automático al insertar el registro.
+3. `actualizado`: Timestamp gestionado mediante triggers automáticos de base de datos ante cualquier modificación.
