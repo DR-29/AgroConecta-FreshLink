@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagrama y Diccionario Relacional — AgroConecta (FreshLink)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #212529;
+      padding: 24px;
+    }
+    .header-box {
+      border-bottom: 3px solid #198754;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    .table-card {
+      background: #ffffff;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      page-break-inside: avoid;
+    }
+    .table-card-header {
+      background: #f1f8f4;
+      border-bottom: 2px solid #198754;
+      padding: 10px 16px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .badge-pk {
+      background-color: #ffc107;
+      color: #000;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .badge-fk {
+      background-color: #0dcaf0;
+      color: #000;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .badge-audit {
+      background-color: #6c757d;
+      color: #fff;
+      font-size: 0.72rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .badge-uk {
+      background-color: #d63384;
+      color: #fff;
+      font-size: 0.72rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    table th {
+      background-color: #f8f9fa;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    table td {
+      font-size: 0.85rem;
+      vertical-align: middle;
+    }
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .table-card {
+        box-shadow: none;
+        border: 1px solid #999;
+        margin-bottom: 15px;
+      }
+      .table-card-header {
+        background: #e6f4ea !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .badge-pk, .badge-fk, .badge-audit, .badge-uk {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center header-box">
+      <div>
+        <h2 class="text-success fw-bold mb-1"><i class="bi bi-diagram-3-fill"></i> AgroConecta (FreshLink) — Esquema Relacional</h2>
+        <p class="text-muted mb-0"><strong>Docente:</strong> Mg. Bryan Fernandez Ebrath | <strong>Asignatura:</strong> Desarrollo Web (Comisión 11) | <strong>Corte 2</strong></p>
+      </div>
+      <div class="no-print">
+        <button onclick="window.print()" class="btn btn-success fw-bold"><i class="bi bi-printer-fill me-1"></i> Imprimir para Entrega Físíca (Ctrl + P)</button>
+      </div>
+    </div>
+
+    <div class="alert alert-success d-flex align-items-center mb-4 py-2" role="alert">
+      <i class="bi bi-shield-check fs-4 me-3"></i>
+      <div>
+        <strong>Campos de Auditoría y Borrado Lógico en Todas las Tablas:</strong> Todas las 16 tablas contienen <code>estado</code> (1=Activo, 0=Eliminado Lógico), <code>creado</code> (timestamp inserción) y <code>actualizado</code> (timestamp modificación).
+      </div>
+    </div>
+
+    <!-- SECCION 1: POSTGRESQL NEON -->
+    <h4 class="fw-bold text-dark mb-3"><i class="bi bi-database-fill text-primary"></i> 1. Base de Datos Principal — PostgreSQL Neon (13 Tablas Normalizadas)</h4>
+
+    <div class="row">
+      <!-- ROL -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-success">
+            <span><i class="bi bi-table"></i> rol</span>
+            <span class="badge bg-success">Obligatoria</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_rol</code></td><td>SERIAL</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>nombre</code></td><td>VARCHAR(50)</td><td><span class="badge-uk">UK</span></td></tr>
+              <tr><td><code>descripcion</code></td><td>TEXT</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>SMALLINT</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- USUARIO -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-success">
+            <span><i class="bi bi-table"></i> usuario</span>
+            <span class="badge bg-success">Obligatoria</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_usuario</code></td><td>SERIAL</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>documento</code></td><td>VARCHAR(30)</td><td><span class="badge-uk">UK</span></td></tr>
+              <tr><td><code>nombres</code></td><td>VARCHAR(100)</td><td>-</td></tr>
+              <tr><td><code>apellidos</code></td><td>VARCHAR(100)</td><td>-</td></tr>
+              <tr><td><code>correo</code></td><td>VARCHAR(150)</td><td><span class="badge-uk">UK</span></td></tr>
+              <tr><td><code>contrasena_hash</code></td><td>VARCHAR(255)</td><td>-</td></tr>
+              <tr><td><code>id_rol</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; rol</span></td></tr>
+              <tr><td><code>estado</code></td><td>SMALLINT</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MODULO -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-success">
+            <span><i class="bi bi-table"></i> modulo</span>
+            <span class="badge bg-success">Obligatoria</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_modulo</code></td><td>SERIAL</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>codigo</code></td><td>VARCHAR(50)</td><td><span class="badge-uk">UK</span></td></tr>
+              <tr><td><code>nombre</code></td><td>VARCHAR(100)</td><td>-</td></tr>
+              <tr><td><code>ruta</code></td><td>VARCHAR(100)</td><td>-</td></tr>
+              <tr><td><code>icono</code></td><td>VARCHAR(50)</td><td>-</td></tr>
+              <tr><td><code>orden</code></td><td>INTEGER</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>SMALLINT</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MODULOXROL -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-success">
+            <span><i class="bi bi-table"></i> moduloxrol</span>
+            <span class="badge bg-success">Obligatoria</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_moduloxrol</code></td><td>SERIAL</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>id_rol</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; rol</span></td></tr>
+              <tr><td><code>id_modulo</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; modulo</span></td></tr>
+              <tr><td><code>puede_crear</code></td><td>BOOLEAN</td><td>-</td></tr>
+              <tr><td><code>puede_leer</code></td><td>BOOLEAN</td><td>-</td></tr>
+              <tr><td><code>puede_actualizar</code></td><td>BOOLEAN</td><td>-</td></tr>
+              <tr><td><code>puede_eliminar</code></td><td>BOOLEAN</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>SMALLINT</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FINCA -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-success">
+            <span><i class="bi bi-table"></i> finca</span>
+            <span class="badge bg-secondary">20 Registros</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_finca</code></td><td>SERIAL</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>id_productor</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; usuario</span></td></tr>
+              <tr><td><code>nombre</code></td><td>VARCHAR(120)</td><td>-</td></tr>
+              <tr><td><code>departamento</code></td><td>VARCHAR(80)</td><td>-</td></tr>
+              <tr><td><code>municipio</code></td><td>VARCHAR(80)</td><td>-</td></tr>
+              <tr><td><code>hectareas</code></td><td>NUMERIC(10,2)</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>SMALLINT</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CATEGORIA_PRODUCTO -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-success">
+            <span><i class="bi bi-table"></i> categoria_producto</span>
+            <span class="badge bg-secondary">10 Registros</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_categoria</code></td><td>SERIAL</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>nombre</code></td><td>VARCHAR(80)</td><td><span class="badge-uk">UK</span></td></tr>
+              <tr><td><code>descripcion</code></td><td>TEXT</td><td>-</td></tr>
+              <tr><td><code>icono</code></td><td>VARCHAR(50)</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>SMALLINT</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PRODUCTO -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-success">
+            <span><i class="bi bi-table"></i> producto</span>
+            <span class="badge bg-secondary">20 Registros</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_producto</code></td><td>SERIAL</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>id_finca</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; finca</span></td></tr>
+              <tr><td><code>id_categoria</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; categoria</span></td></tr>
+              <tr><td><code>nombre</code></td><td>VARCHAR(120)</td><td>-</td></tr>
+              <tr><td><code>unidad_medida</code></td><td>VARCHAR(20)</td><td>-</td></tr>
+              <tr><td><code>precio_unitario</code></td><td>NUMERIC(12,2)</td><td>-</td></tr>
+              <tr><td><code>stock_disponible</code></td><td>NUMERIC(12,2)</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>SMALLINT</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PEDIDO -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-success">
+            <span><i class="bi bi-table"></i> pedido</span>
+            <span class="badge bg-secondary">20 Registros</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_pedido</code></td><td>SERIAL</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>codigo_pedido</code></td><td>VARCHAR(30)</td><td><span class="badge-uk">UK</span></td></tr>
+              <tr><td><code>id_tienda</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; usuario</span></td></tr>
+              <tr><td><code>direccion_entrega</code></td><td>VARCHAR(200)</td><td>-</td></tr>
+              <tr><td><code>municipio_entrega</code></td><td>VARCHAR(80)</td><td>-</td></tr>
+              <tr><td><code>estado_pedido</code></td><td>VARCHAR(30)</td><td>-</td></tr>
+              <tr><td><code>total</code></td><td>NUMERIC(14,2)</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>SMALLINT</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PEDIDO_ITEM -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-success">
+            <span><i class="bi bi-table"></i> pedido_item</span>
+            <span class="badge bg-secondary">20 Registros</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_pedido_item</code></td><td>SERIAL</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>id_pedido</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; pedido</span></td></tr>
+              <tr><td><code>id_producto</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; producto</span></td></tr>
+              <tr><td><code>cantidad</code></td><td>NUMERIC(12,2)</td><td>-</td></tr>
+              <tr><td><code>precio_unitario</code></td><td>NUMERIC(12,2)</td><td>-</td></tr>
+              <tr><td><code>subtotal</code></td><td>NUMERIC(14,2)</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>SMALLINT</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VEHICULO -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-success">
+            <span><i class="bi bi-table"></i> vehiculo</span>
+            <span class="badge bg-secondary">20 Registros</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_vehiculo</code></td><td>SERIAL</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>id_transportista</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; usuario</span></td></tr>
+              <tr><td><code>placa</code></td><td>VARCHAR(10)</td><td><span class="badge-uk">UK</span></td></tr>
+              <tr><td><code>modelo</code></td><td>VARCHAR(80)</td><td>-</td></tr>
+              <tr><td><code>capacidad_toneladas</code></td><td>NUMERIC(6,2)</td><td>-</td></tr>
+              <tr><td><code>aprobado_admin</code></td><td>BOOLEAN</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>SMALLINT</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SOLICITUD_TRANSPORTE -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-success">
+            <span><i class="bi bi-table"></i> solicitud_transporte</span>
+            <span class="badge bg-secondary">10 Registros</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_solicitud</code></td><td>SERIAL</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>codigo_seguimiento</code></td><td>VARCHAR(40)</td><td><span class="badge-uk">UK</span></td></tr>
+              <tr><td><code>id_pedido</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; pedido</span></td></tr>
+              <tr><td><code>id_transportista</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; usuario</span></td></tr>
+              <tr><td><code>id_vehiculo</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; vehiculo</span></td></tr>
+              <tr><td><code>estado_solicitud</code></td><td>VARCHAR(30)</td><td>-</td></tr>
+              <tr><td><code>costo_transporte</code></td><td>NUMERIC(12,2)</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>SMALLINT</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CALIFICACION -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-success">
+            <span><i class="bi bi-table"></i> calificacion</span>
+            <span class="badge bg-secondary">10 Registros</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_calificacion</code></td><td>SERIAL</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>id_pedido</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; pedido</span></td></tr>
+              <tr><td><code>id_calificador</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; usuario</span></td></tr>
+              <tr><td><code>id_calificado</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; usuario</span></td></tr>
+              <tr><td><code>puntuacion</code></td><td>INTEGER</td><td>CHECK(1-5)</td></tr>
+              <tr><td><code>comentario</code></td><td>TEXT</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>SMALLINT</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- HISTORIAL_PEDIDO_ESTADO -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-success">
+            <span><i class="bi bi-table"></i> historial_pedido_estado</span>
+            <span class="badge bg-secondary">Auditoría Traza</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_historial</code></td><td>SERIAL</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>id_pedido</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; pedido</span></td></tr>
+              <tr><td><code>id_usuario_cambio</code></td><td>INTEGER</td><td><span class="badge-fk">FK &rarr; usuario</span></td></tr>
+              <tr><td><code>estado_anterior</code></td><td>VARCHAR(30)</td><td>-</td></tr>
+              <tr><td><code>estado_nuevo</code></td><td>VARCHAR(30)</td><td>-</td></tr>
+              <tr><td><code>comentario</code></td><td>TEXT</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>SMALLINT</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMPTZ</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCION 2: MYSQL AIVEN -->
+    <h4 class="fw-bold text-dark mt-4 mb-3"><i class="bi bi-database-fill text-warning"></i> 2. Base de Datos Auxiliar — MySQL Aiven (3 Tablas de Pagos y Facturación)</h4>
+
+    <div class="row">
+      <!-- METODO_PAGO -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-warning bg-light">
+            <span><i class="bi bi-table"></i> metodo_pago</span>
+            <span class="badge bg-warning text-dark">10 Registros</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_metodo</code></td><td>INT AUTO_INC</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>codigo</code></td><td>VARCHAR(40)</td><td><span class="badge-uk">UK</span></td></tr>
+              <tr><td><code>nombre</code></td><td>VARCHAR(80)</td><td>-</td></tr>
+              <tr><td><code>descripcion</code></td><td>TEXT</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>TINYINT(1)</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMP</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMP</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TRANSACCION_PAGO -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-warning bg-light">
+            <span><i class="bi bi-table"></i> transaccion_pago</span>
+            <span class="badge bg-warning text-dark">10 Registros</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_transaccion</code></td><td>INT AUTO_INC</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>id_pedido</code></td><td>INT</td><td>-</td></tr>
+              <tr><td><code>id_metodo</code></td><td>INT</td><td><span class="badge-fk">FK &rarr; metodo</span></td></tr>
+              <tr><td><code>referencia_pago</code></td><td>VARCHAR(60)</td><td><span class="badge-uk">UK</span></td></tr>
+              <tr><td><code>monto_total</code></td><td>DECIMAL(12,2)</td><td>-</td></tr>
+              <tr><td><code>estado_pago</code></td><td>VARCHAR(30)</td><td>-</td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMP</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMP</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- COMPROBANTE_FACTURA -->
+      <div class="col-md-6 col-lg-4">
+        <div class="table-card">
+          <div class="table-card-header text-warning bg-light">
+            <span><i class="bi bi-table"></i> comprobante_factura</span>
+            <span class="badge bg-warning text-dark">10 Registros</span>
+          </div>
+          <table class="table table-sm table-striped mb-0">
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Clave</th></tr></thead>
+            <tbody>
+              <tr><td><code>id_factura</code></td><td>INT AUTO_INC</td><td><span class="badge-pk">PK</span></td></tr>
+              <tr><td><code>id_transaccion</code></td><td>INT</td><td><span class="badge-fk">FK &rarr; transaccion (1:1)</span></td></tr>
+              <tr><td><code>numero_factura</code></td><td>VARCHAR(40)</td><td><span class="badge-uk">UK</span></td></tr>
+              <tr><td><code>nit_emisor</code></td><td>VARCHAR(30)</td><td>-</td></tr>
+              <tr><td><code>subtotal</code></td><td>DECIMAL(12,2)</td><td>-</td></tr>
+              <tr><td><code>iva</code></td><td>DECIMAL(12,2)</td><td>-</td></tr>
+              <tr><td><code>total</code></td><td>DECIMAL(12,2)</td><td>-</td></tr>
+              <tr><td><code>estado</code></td><td>TINYINT(1)</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>creado</code></td><td>TIMESTAMP</td><td><span class="badge-audit">AUDIT</span></td></tr>
+              <tr><td><code>actualizado</code></td><td>TIMESTAMP</td><td><span class="badge-audit">AUDIT</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIE DE PAGINA PARA IMPRESION -->
+    <div class="mt-4 pt-3 border-top text-center text-muted small">
+      AgroConecta (FreshLink) &copy; 2026 — Proyecto Académico de Ingeniería Web. Documento generado para evaluación docente.
+    </div>
+  </div>
+
+</body>
+</html>
