@@ -1,0 +1,75 @@
+# Render Blueprint para AgroConecta (FreshLink)
+# Parcial 1 & Taller 1 Corte 2 - Despliegue en la Nube
+# Permite levantar los 3 servicios con 1 solo clic conectando el repositorio GitHub.
+
+services:
+  # -------------------------------------------------------------
+  # 1. Backend Principal: FastAPI (Python 3.12 + Neon PostgreSQL)
+  # -------------------------------------------------------------
+  - type: web
+    name: agroconecta-api-fastapi
+    runtime: python
+    region: ohio
+    plan: free
+    rootDir: api-fastapi
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 480
+      - key: BACKEND_CORS_ORIGINS
+        value: '["*"]'
+
+  # -------------------------------------------------------------
+  # 2. Microservicio Auxiliar: Express (Node.js + MySQL Aiven)
+  # -------------------------------------------------------------
+  - type: web
+    name: agroconecta-api-express
+    runtime: node
+    region: ohio
+    plan: free
+    rootDir: api-express
+    buildCommand: npm install
+    startCommand: node src/index.js
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: MYSQL_HOST
+        value: agroconecta-mysql-diegofdez2000-a94b.g.aivencloud.com
+      - key: MYSQL_PORT
+        value: "10265"
+      - key: MYSQL_USER
+        value: avnadmin
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_DATABASE
+        value: defaultdb
+      - key: MYSQL_SSL
+        value: "true"
+
+  # -------------------------------------------------------------
+  # 3. Frontend Web: SvelteKit + Bootstrap 5.0.2
+  # -------------------------------------------------------------
+  - type: web
+    name: agroconecta-frontend-svelte
+    runtime: node
+    region: ohio
+    plan: free
+    rootDir: frontend-svelte
+    buildCommand: npm install && npm run build
+    startCommand: npm run preview -- --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: VITE_API_FASTAPI_URL
+        fromService:
+          type: web
+          name: agroconecta-api-fastapi
+          property: host
+      - key: VITE_API_EXPRESS_URL
+        fromService:
+          type: web
+          name: agroconecta-api-express
+          property: host

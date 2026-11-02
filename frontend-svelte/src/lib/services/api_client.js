@@ -25,6 +25,28 @@ export function clearSession() {
 	localStorage.removeItem(USER_KEY);
 }
 
+export function resolveUrl(url) {
+	if (typeof url !== 'string') return url;
+	if (url.startsWith('http://') || url.startsWith('https://')) return url;
+
+	const fastApiBase =
+		typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_FASTAPI_URL
+			? import.meta.env.VITE_API_FASTAPI_URL.replace(/\/$/, '')
+			: '';
+	const expressBase =
+		typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_EXPRESS_URL
+			? import.meta.env.VITE_API_EXPRESS_URL.replace(/\/$/, '')
+			: '';
+
+	if (url.startsWith('/api/v1') && fastApiBase) {
+		return `${fastApiBase}${url}`;
+	}
+	if (url.startsWith('/api/aux') && expressBase) {
+		return `${expressBase}${url.replace('/api/aux', '/api')}`;
+	}
+	return url;
+}
+
 export async function request(url, options = {}) {
 	const headers = {
 		'Content-Type': 'application/json',
@@ -36,7 +58,8 @@ export async function request(url, options = {}) {
 		headers['Authorization'] = `Bearer ${token}`;
 	}
 
-	const response = await fetch(url, {
+	const targetUrl = resolveUrl(url);
+	const response = await fetch(targetUrl, {
 		...options,
 		headers
 	});
