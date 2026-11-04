@@ -12,6 +12,10 @@ export function getStoredUser() {
 	return user ? JSON.parse(user) : null;
 }
 
+/**
+ * @param {string} token
+ * @param {any} user
+ */
 export function setSession(token, user) {
 	if (typeof window === 'undefined') return;
 	localStorage.setItem(TOKEN_KEY, token);
@@ -24,6 +28,10 @@ export function clearSession() {
 	localStorage.removeItem(USER_KEY);
 }
 
+/**
+ * @param {string} url
+ * @returns {string}
+ */
 export function resolveUrl(url) {
 	if (typeof url !== 'string') return url;
 	if (url.startsWith('http://') || url.startsWith('https://')) return url;
@@ -46,6 +54,10 @@ export function resolveUrl(url) {
 	return url;
 }
 
+/**
+ * @param {string} url
+ * @param {RequestInit} [options]
+ */
 export async function request(url, options = {}) {
 	const headers = {
 		'Content-Type': 'application/json',
