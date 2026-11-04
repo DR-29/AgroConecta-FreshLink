@@ -1,4 +1,3 @@
-# Exportador unificado de esquemas Pydantic
 from app.models.usuario import (
     AuditFields, Token, TokenPayload, LoginRequest,
     UsuarioBase, UsuarioCreate, UsuarioUpdate, UsuarioResponse

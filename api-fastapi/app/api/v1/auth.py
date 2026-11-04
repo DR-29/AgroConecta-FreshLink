@@ -14,9 +14,6 @@ from app.api.deps import get_current_user
 
 router = APIRouter()
 
-# Instancia del repositorio siguiendo el estándar de la guía
-repo = UsuarioRepository()
-
 @router.post("/login", response_model=Token, summary="Inicio de sesión y generación de JWT")
 def login_for_access_token(
     db: Session = Depends(get_db),

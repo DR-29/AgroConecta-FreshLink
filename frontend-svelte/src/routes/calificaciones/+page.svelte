@@ -15,7 +15,6 @@
 	let tipoMensaje = 'success';
 	let usuario = null;
 
-	// Formulario de Calificación
 	let id_pedido = '';
 	let id_calificado = '';
 	let puntuacion = 5;
@@ -54,10 +53,9 @@
 			return;
 		}
 
-		// Calificar al productor o transportista del pedido
 		const nueva = {
 			id_pedido: Number(id_pedido),
-			id_calificado: 2, // Por defecto califica al productor de la orden (Carlos)
+			id_calificado: 2,
 			puntuacion: Number(puntuacion),
 			comentario
 		};
@@ -88,7 +86,6 @@
 <AlertMessage {mensaje} tipo={tipoMensaje} />
 
 <div class="row g-4">
-	<!-- Formulario para Calificar -->
 	<div class="col-lg-4">
 		<Card titulo="Emitir Calificación de Servicio" subtitulo="Solo órdenes entregadas">
 			<form on:submit={handleCalificar}>
@@ -143,7 +140,6 @@
 		</Card>
 	</div>
 
-	<!-- Listado de Calificaciones Públicas -->
 	<div class="col-lg-8">
 		<Card titulo="Historial de Calificaciones y Reputación" subtitulo="Transparencia pública de servicio">
 			{#if cargando}

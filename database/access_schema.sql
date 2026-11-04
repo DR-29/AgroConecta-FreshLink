@@ -223,3 +223,4 @@ CREATE TABLE comprobante_factura (
     creado DATETIME,
     actualizado DATETIME
 );
+

@@ -84,9 +84,8 @@
 
 			<hr class="my-4" />
 
-			<!-- Botones de Acceso Rápido para Demostración en Vivo -->
 			<div class="text-center">
-				<p class="small text-muted fw-semibold mb-2">Acceso rápido para sustentación docente:</p>
+				<p class="small text-muted fw-semibold mb-2">Cuentas de demostración:</p>
 				<div class="d-grid gap-2">
 					<button
 						type="button"

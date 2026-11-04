@@ -8,7 +8,6 @@ class Settings(BaseSettings):
     PROJECT_VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
 
-    # Variables de base de datos Neon PostgreSQL según la guía de clase
     DB_HOST: Optional[str] = None
     DB_NAME: Optional[str] = None
     DB_USER: Optional[str] = None

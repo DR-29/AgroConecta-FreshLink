@@ -1,3 +1,6 @@
+import os
+os.environ["DATABASE_URL"] = "sqlite:///./test_agroconecta.db"
+
 import pytest
 from decimal import Decimal
 from fastapi.testclient import TestClient

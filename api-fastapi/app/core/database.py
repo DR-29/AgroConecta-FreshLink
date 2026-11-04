@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-# Carga las variables del archivo .env al entorno de Python
 load_dotenv()
 
 
@@ -21,7 +20,6 @@ class Database:
         self.password = os.getenv("DB_PASSWORD")
         self.port = os.getenv("DB_PORT", 5432)
 
-        # Si no se definieron las variables individuales, extraer de DATABASE_URL
         if not self.host and os.getenv("DATABASE_URL"):
             from urllib.parse import urlparse
             url = urlparse(os.getenv("DATABASE_URL"))
@@ -47,7 +45,6 @@ class Database:
             return None
 
 
-# --- Configuración complementaria para compatibilidad y tests (SQLAlchemy) ---
 from app.core.config import settings
 
 db_url = settings.sync_database_url

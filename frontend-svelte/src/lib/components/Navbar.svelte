@@ -11,7 +11,6 @@
 		usuario = getStoredUser();
 		if (usuario) {
 			try {
-				// Cargar módulos dinámicamente desde la BD (tabla rolxmodulo)
 				const idRol = usuario.id_rol || (usuario.rol === 'ADMINISTRADOR' ? 1 : usuario.rol === 'PRODUCTOR' ? 2 : usuario.rol === 'TIENDA' ? 3 : 4);
 				modulos = await obtenerModulosAutorizados(idRol);
 			} catch (e) {
@@ -58,7 +57,6 @@
 				</li>
 
 				{#if usuario && modulos.length > 0}
-					<!-- Módulos cargados dinámicamente desde la BD (tabla rolxmodulo) -->
 					{#each modulos as mod}
 						<li class="nav-item">
 							<a class="nav-link text-capitalize" href={mod.ruta}>
@@ -82,7 +80,6 @@
 						</li>
 					{/each}
 
-					<!-- Módulo auxiliar de Facturación y Pagos (API Express + MySQL) -->
 					<li class="nav-item">
 						<a class="nav-link" href="/pagos">
 							<i class="bi bi-credit-card me-1"></i> Pagos y Facturas

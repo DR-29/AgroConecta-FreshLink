@@ -16,11 +16,6 @@ from app.api.acceso import es_admin
 router = APIRouter()
 MODULO = "MOD_CATALOGO"
 
-# Instancia del repositorio siguiendo el estándar de la guía
-repo = CatalogoRepository()
-
-
-# Categorías
 @router.get("/categorias", response_model=List[CategoriaResponse], summary="Listar categorías de productos (Público)")
 def get_categorias(
     db: Session = Depends(get_db)
@@ -47,7 +42,6 @@ def create_categoria(
     return r.crear_categoria(cat_in)
 
 
-# Catálogo de productos
 @router.get("/productos", response_model=List[ProductoResponse], summary="Listar catálogo de productos con filtros (Público)")
 def get_productos(
     id_categoria: Optional[int] = Query(None, description="Filtrar por categoría"),

@@ -14,14 +14,12 @@
 	let tipoMensaje = 'success';
 	let usuario = null;
 
-	// Formulario reactivo (Cero campos ID)
 	let nombre = '';
 	let departamento = '';
 	let municipio = '';
 	let vereda = '';
 	let area_hectareas = '';
 
-	// Estado para modo Edición vs Creación (Siguiendo la Guía Parte 7 del Docente)
 	let idEditando = null;
 
 	onMount(async () => {
@@ -58,8 +56,6 @@
 		vereda = finca.vereda || '';
 		area_hectareas = finca.area_hectareas || '';
 		mensaje = '';
-
-		// Scroll suave al formulario
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	}
 
@@ -125,7 +121,6 @@
 <AlertMessage {mensaje} tipo={tipoMensaje} />
 
 <div class="row g-4">
-	<!-- Formulario Reactivo Único (Crear / Editar) -->
 	<div class="col-lg-4">
 		<Card
 			titulo={idEditando === null ? 'Registrar Nueva Finca' : 'Editar Información de Finca'}
@@ -208,7 +203,6 @@
 		</Card>
 	</div>
 
-	<!-- Tabla con DataTable (Búsqueda en vivo + Paginación, CERO IDs visibles) -->
 	<div class="col-lg-8">
 		<Card titulo="Listado de Fincas Registradas" subtitulo="Visualización ordenada de predios activos">
 			{#if cargando}

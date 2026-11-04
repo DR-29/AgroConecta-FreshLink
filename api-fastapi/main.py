@@ -21,7 +21,6 @@ app.add_middleware(
     allow_origin_regex=r"https?://.*",
 )
 
-# Conexión de las rutas de la API
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 

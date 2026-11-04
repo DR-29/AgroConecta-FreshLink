@@ -16,7 +16,6 @@
 	let tipoMensaje = 'success';
 	let usuario = null;
 
-	// Formulario para crear Pedido (Tienda)
 	let productoSeleccionado = '';
 	let cantidad = 10;
 	let direccion_entrega = 'Carrera 7 # 45-12';
@@ -115,7 +114,6 @@
 <AlertMessage {mensaje} tipo={tipoMensaje} />
 
 <div class="row g-4">
-	<!-- Formulario para Emitir Nueva Orden de Compra -->
 	<div class="col-lg-4">
 		<Card titulo="Emitir Orden de Compra" subtitulo="Comercio / Tienda">
 			<form on:submit={handleCrearPedido}>
@@ -185,7 +183,6 @@
 		</Card>
 	</div>
 
-	<!-- Tabla de Pedidos con Trazabilidad -->
 	<div class="col-lg-8">
 		<Card titulo="Órdenes Registradas y Seguimiento" subtitulo="Trazabilidad histórica de estados">
 			{#if cargando}
@@ -230,7 +227,6 @@
 							<BadgeEstado estado={item.estado_pedido} />
 						</td>
 						<td class="text-end">
-							<!-- Botones de transición de estado acordes al rol y ciclo de vida -->
 							<div class="btn-group btn-group-sm">
 								{#if item.estado_pedido === 'PENDIENTE'}
 									<button

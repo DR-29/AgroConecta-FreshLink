@@ -19,11 +19,7 @@ from app.api.acceso import es_admin
 router = APIRouter()
 MODULO = "MOD_SEGURIDAD"
 
-# Instancia del repositorio siguiendo el estándar de la guía
-repo = UsuarioRepository()
 
-
-# Usuarios
 @router.get("/", response_model=List[UsuarioResponse], summary="Listar usuarios con filtros y borrado lógico")
 def get_usuarios(
     db: Session = Depends(get_db),
@@ -114,7 +110,6 @@ def reactivate_usuario(
     return {"mensaje": f"Usuario con ID {id_usuario} reactivado con éxito (estado = 1)"}
 
 
-# Roles
 @router.get("/roles/todos", response_model=List[RolResponse], summary="Listar todos los roles")
 def get_roles(
     db: Session = Depends(get_db),

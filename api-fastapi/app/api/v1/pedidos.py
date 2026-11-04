@@ -21,10 +21,6 @@ from app.api.acceso import (
 router = APIRouter()
 MODULO = "MOD_PEDIDOS"
 
-# Instancia del repositorio siguiendo el estándar de la guía
-repo = PedidoRepository()
-
-# Transiciones permitidas por rol (el ADMINISTRADOR puede cualquiera)
 TRANSICIONES_POR_ROL = {
     "TIENDA": {"CANCELADO"},
     "PRODUCTOR": {"ACEPTADO", "PREPARANDO", "CANCELADO"},

@@ -14,10 +14,7 @@ from app.api.deps import require_module_permission
 router = APIRouter()
 MODULO = "MOD_SEGURIDAD"
 
-# Instancia del repositorio siguiendo el estándar de la guía
-repo = SeguridadRepository()
 
-# Módulos
 @router.get("/modulos", response_model=List[ModuloResponse], summary="Listar módulos del sistema")
 def get_modulos(
     db: Session = Depends(get_db),
@@ -50,7 +47,6 @@ def create_modulo(
     db.refresh(nuevo_modulo)
     return nuevo_modulo
 
-# ModuloXRol (RBAC)
 @router.get("/permisos", response_model=List[ModuloXRolResponse], summary="Listar matriz de permisos moduloxrol")
 def get_permisos(
     id_rol: int = None,

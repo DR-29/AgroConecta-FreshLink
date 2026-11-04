@@ -14,7 +14,6 @@
 	let mensaje = '';
 	let tipoMensaje = 'success';
 
-	// Formulario de Transacción
 	let id_metodo_pago = '';
 	let monto = '';
 	let codigo_referencia = '';
@@ -81,7 +80,6 @@
 <AlertMessage {mensaje} tipo={tipoMensaje} />
 
 <div class="row g-4">
-	<!-- Formulario de Pago (Express) -->
 	<div class="col-lg-4">
 		<Card titulo="Registrar Transacción" subtitulo="Procesamiento en MySQL">
 			<form on:submit={handleCrearTransaccion}>
@@ -135,7 +133,6 @@
 		</Card>
 	</div>
 
-	<!-- Listado de Transacciones en MySQL -->
 	<div class="col-lg-8">
 		<Card titulo="Historial de Transacciones Registradas" subtitulo="Base de datos auxiliar MySQL">
 			{#if cargando}

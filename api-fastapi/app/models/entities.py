@@ -5,7 +5,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
-# 1. Rol
+
 class Rol(Base):
     __tablename__ = "rol"
 
@@ -19,7 +19,7 @@ class Rol(Base):
     usuarios = relationship("Usuario", back_populates="rol")
     modulos = relationship("ModuloXRol", back_populates="rol")
 
-# 2. Usuario
+
 class Usuario(Base):
     __tablename__ = "usuario"
 
@@ -41,7 +41,7 @@ class Usuario(Base):
     pedidos = relationship("Pedido", back_populates="tienda")
     vehiculos = relationship("Vehiculo", back_populates="transportista")
 
-# 3. Modulo
+
 class Modulo(Base):
     __tablename__ = "modulo"
 
@@ -56,7 +56,7 @@ class Modulo(Base):
 
     roles = relationship("ModuloXRol", back_populates="modulo")
 
-# 4. ModuloXRol (RBAC)
+
 class ModuloXRol(Base):
     __tablename__ = "moduloxrol"
 
@@ -76,7 +76,7 @@ class ModuloXRol(Base):
     rol = relationship("Rol", back_populates="modulos")
     modulo = relationship("Modulo", back_populates="roles")
 
-# 5. Finca
+
 class Finca(Base):
     __tablename__ = "finca"
 
@@ -96,7 +96,7 @@ class Finca(Base):
     productor = relationship("Usuario", back_populates="fincas")
     productos = relationship("Producto", back_populates="finca")
 
-# 6. CategoriaProducto
+
 class CategoriaProducto(Base):
     __tablename__ = "categoria_producto"
 
@@ -109,7 +109,7 @@ class CategoriaProducto(Base):
 
     productos = relationship("Producto", back_populates="categoria")
 
-# 7. Producto
+
 class Producto(Base):
     __tablename__ = "producto"
 
@@ -130,7 +130,7 @@ class Producto(Base):
     categoria = relationship("CategoriaProducto", back_populates="productos")
     pedido_items = relationship("PedidoItem", back_populates="producto")
 
-# 8. Pedido
+
 class Pedido(Base):
     __tablename__ = "pedido"
 
@@ -151,7 +151,7 @@ class Pedido(Base):
     solicitud = relationship("SolicitudTransporte", back_populates="pedido", uselist=False)
     historial = relationship("HistorialPedidoEstado", back_populates="pedido", cascade="all, delete-orphan")
 
-# 9. PedidoItem
+
 class PedidoItem(Base):
     __tablename__ = "pedido_item"
 
@@ -170,7 +170,7 @@ class PedidoItem(Base):
     pedido = relationship("Pedido", back_populates="items")
     producto = relationship("Producto", back_populates="pedido_items")
 
-# 10. Vehiculo
+
 class Vehiculo(Base):
     __tablename__ = "vehiculo"
 
@@ -187,7 +187,7 @@ class Vehiculo(Base):
 
     transportista = relationship("Usuario", back_populates="vehiculos")
 
-# 11. SolicitudTransporte
+
 class SolicitudTransporte(Base):
     __tablename__ = "solicitud_transporte"
 
@@ -207,7 +207,7 @@ class SolicitudTransporte(Base):
     transportista = relationship("Usuario")
     vehiculo = relationship("Vehiculo")
 
-# 12. Calificacion
+
 class Calificacion(Base):
     __tablename__ = "calificacion"
 
@@ -227,7 +227,7 @@ class Calificacion(Base):
     calificador = relationship("Usuario", foreign_keys=[id_calificador])
     calificado = relationship("Usuario", foreign_keys=[id_calificado])
 
-# 13. HistorialPedidoEstado
+
 class HistorialPedidoEstado(Base):
     __tablename__ = "historial_pedido_estado"
 

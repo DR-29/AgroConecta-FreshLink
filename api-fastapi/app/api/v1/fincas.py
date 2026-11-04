@@ -12,9 +12,6 @@ from app.api.acceso import es_admin, nombre_rol
 router = APIRouter()
 MODULO = "MOD_FINCAS"
 
-# Instancia del repositorio siguiendo el estándar de la guía
-repo = FincaRepository()
-
 
 @router.get("/", response_model=List[FincaResponse], summary="Listar fincas activas")
 def get_fincas(

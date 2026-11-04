@@ -1,4 +1,3 @@
-// Helper centralizado para peticiones HTTP a FastAPI y Express
 const TOKEN_KEY = 'agroconecta_token';
 const USER_KEY = 'agroconecta_user';
 
@@ -73,13 +72,10 @@ export async function request(url, options = {}) {
 			} else if (errData && errData.error) {
 				errorMessage = errData.error;
 			}
-		} catch (e) {
-			// No se pudo parsear JSON
-		}
+		} catch (e) {}
 		throw new Error(errorMessage);
 	}
 
-	// 204 No Content
 	if (response.status === 204) return null;
 
 	return await response.json();

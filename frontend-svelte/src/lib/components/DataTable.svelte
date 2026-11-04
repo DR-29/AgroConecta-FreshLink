@@ -7,7 +7,6 @@
 	let searchTerm = '';
 	let currentPage = 1;
 
-	// Filtrado reactivo
 	$: filteredItems = items.filter((item) => {
 		if (!searchTerm.trim()) return true;
 		const term = searchTerm.toLowerCase();
@@ -17,11 +16,9 @@
 				return val && String(val).toLowerCase().includes(term);
 			});
 		}
-		// Si no se especifican searchFields, buscar en todos los valores del objeto
 		return Object.values(item).some((val) => val && String(val).toLowerCase().includes(term));
 	});
 
-	// Paginación reactiva
 	$: totalPages = Math.ceil(filteredItems.length / pageSize) || 1;
 	$: {
 		if (currentPage > totalPages) currentPage = totalPages;
@@ -37,7 +34,6 @@
 </script>
 
 <div class="datatable-wrapper">
-	<!-- Barra de Búsqueda y Control de Registros -->
 	<div class="row align-items-center mb-3 g-2">
 		<div class="col-md-6 col-12">
 			<div class="input-group">
@@ -64,7 +60,6 @@
 		</div>
 	</div>
 
-	<!-- Tabla -->
 	<div class="table-responsive bg-white rounded shadow-sm border">
 		<table class="table table-hover align-middle mb-0">
 			<thead class="table-light text-uppercase small fw-bold">
@@ -87,7 +82,6 @@
 		</table>
 	</div>
 
-	<!-- Paginación -->
 	{#if totalPages > 1}
 		<div class="d-flex flex-wrap justify-content-between align-items-center mt-3">
 			<small class="text-muted">

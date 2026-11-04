@@ -21,7 +21,6 @@ app.use('/api/facturas', facturasRoutes);
 app.get('/', (req, res) => {
   res.json({
     sistema: 'API Auxiliar - Pagos y Facturación AgroConecta',
-    evaluacion: 'Parcial I - Entregable 2 (Express + MySQL 30%)',
     estado: 'Servicio en ejecución',
     rutas_disponibles: {
       metodos_pago: '/api/metodos-pago',

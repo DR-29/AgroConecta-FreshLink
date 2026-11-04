@@ -18,9 +18,6 @@ from app.api.acceso import (
 router = APIRouter()
 MODULO = "MOD_LOGISTICA"
 
-# Instancia del repositorio siguiendo el estándar de la guía
-repo = LogisticaRepository()
-
 
 def _validar_transportista_y_vehiculo(db: Session, id_transportista: Optional[int], id_vehiculo: Optional[int]) -> None:
     """Regla de negocio: solo transportistas activos con vehículos aprobados pueden recibir solicitudes."""
@@ -40,7 +37,6 @@ def _validar_transportista_y_vehiculo(db: Session, id_transportista: Optional[in
         raise HTTPException(status_code=400, detail="El vehículo aún no ha sido aprobado por un administrador")
 
 
-# Vehículos
 @router.get("/vehiculos", response_model=List[VehiculoResponse], summary="Listar vehículos de carga")
 def get_vehiculos(
     db: Session = Depends(get_db),
@@ -127,7 +123,6 @@ def delete_vehiculo_logico(
     return {"mensaje": f"Vehículo {id_vehiculo} desactivado lógicamente (estado = 0)"}
 
 
-# Solicitudes de transporte
 @router.get("/solicitudes", response_model=List[SolicitudTransporteResponse], summary="Listar solicitudes de transporte")
 def get_solicitudes(
     db: Session = Depends(get_db),

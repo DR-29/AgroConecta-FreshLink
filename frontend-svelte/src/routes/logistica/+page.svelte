@@ -15,7 +15,6 @@
 	let tipoMensaje = 'success';
 	let usuario = null;
 
-	// Formulario de Vehículo
 	let placa = '';
 	let modelo = '';
 	let capacidad_toneladas = '';
@@ -89,7 +88,6 @@
 <AlertMessage {mensaje} tipo={tipoMensaje} />
 
 <div class="row g-4">
-	<!-- Formulario de Vehículo (Transportista) -->
 	<div class="col-lg-4">
 		<Card titulo="Registrar Vehículo de Carga" subtitulo="Postulación para transporte">
 			<form on:submit={handleRegistrarVehiculo}>
@@ -149,7 +147,6 @@
 		</Card>
 	</div>
 
-	<!-- Tabla de Vehículos -->
 	<div class="col-lg-8">
 		<Card titulo="Flota Vehicular Registrada" subtitulo="Estado de autorización y capacidad">
 			{#if cargando}

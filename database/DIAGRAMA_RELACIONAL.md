@@ -254,3 +254,4 @@ Todas las tablas en ambos motores de base de datos implementan rigurosamente:
 * **`estado`:** Control de borrado lógico (`1` = Activo / Visible en frontend, `0` = Inactivo / Dado de baja lógica). Los registros nunca se destruyen físicamente (`DELETE FROM` prohibido).
 * **`creado`:** Marca de tiempo generada automáticamente en el `INSERT`.
 * **`actualizado`:** Marca de tiempo actualizada automáticamente en cada `UPDATE` vía triggers de base de datos (`actualizar_timestamp_trigger()`).
+

@@ -28,7 +28,6 @@
 	{/if}
 </Header>
 
-<!-- Tarjetas de métricas del ecosistema -->
 <div class="row g-3 mb-4">
 	<div class="col-md-3 col-sm-6">
 		<StatCard titulo="Fincas Registradas" valor="10+" icono="bi-geo-alt" color="success" />
@@ -44,7 +43,6 @@
 	</div>
 </div>
 
-<!-- Bienvenida y Accesos Rápidos -->
 <div class="row g-4">
 	<div class="col-lg-8">
 		<Card titulo="Bienvenido a AgroConecta" subtitulo="Ciclo Operativo Transparente">

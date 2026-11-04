@@ -22,7 +22,6 @@
 	let mensaje = '';
 	let tipoMensaje = 'success';
 
-	// Formulario reactivo
 	let id_finca = '';
 	let id_categoria = '';
 	let nombre = '';
@@ -145,7 +144,6 @@
 		}
 	}
 
-	// Obtener nombres para evitar mostrar IDs
 	function nombreCategoria(idCat) {
 		const cat = categorias.find((c) => c.id_categoria === idCat);
 		return cat ? cat.nombre : 'General';
@@ -170,7 +168,6 @@
 <AlertMessage {mensaje} tipo={tipoMensaje} />
 
 <div class="row g-4">
-	<!-- Formulario de Publicación / Edición -->
 	<div class="col-lg-4">
 		<Card
 			titulo={idEditando === null ? 'Publicar Nueva Cosecha' : 'Editar Producto'}
@@ -273,7 +270,6 @@
 		</Card>
 	</div>
 
-	<!-- Tabla con DataTable (Cero IDs visibles) -->
 	<div class="col-lg-8">
 		<Card titulo="Catálogo Disponible para Comercios" subtitulo="Productos con stock actualizado">
 			{#if cargando}
